@@ -122,6 +122,10 @@ uint8_t UART_BUF1[]="1:hello world\r\n";
 uint8_t UART_BUF2[]="2:hello world\r\n";
 extern DMA_HandleTypeDef hdma_uart4_tx;
 
+#include "stm32h7xx_hal_gpio.h"
+uint32_t odr;
+uint32_t status;
+extern DMA_HandleTypeDef hdma_tim2_up;
 /* USER CODE END 0 */
 
 /**
@@ -136,7 +140,7 @@ int main(void)
   /* USER CODE END 1 */
 
   /* MPU Configuration--------------------------------------------------------*/
-//  MPU_Config();
+  MPU_Config();
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -162,13 +166,14 @@ int main(void)
   MX_LPTIM2_Init();
   MX_UART4_Init();
   /* USER CODE BEGIN 2 */
-	HAL_DMAEx_MultiBufferStart(&hdma_uart4_tx, UART_BUF1, &huart4.Instance->TDR, UART_BUF2,sizeof(UART_BUF1));
-	ATOMIC_SET_BIT(huart4.Instance->CR3, USART_CR3_DMAT);
-	HAL_LPTIM_Counter_Start(&hlptim2,37500-1);
+//	HAL_DMAEx_MultiBufferStart(&hdma_uart4_tx, UART_BUF1, &huart4.Instance->TDR, UART_BUF2,sizeof(UART_BUF1));
+//	ATOMIC_SET_BIT(huart4.Instance->CR3, USART_CR3_DMAT);
+//	HAL_LPTIM_Counter_Start(&hlptim2,37500-1);
 
+	HAL_DMA_Start_IT(&hdma_tim2_up, &status, &GPIOB->BSRR, 1);
 	HAL_TIM_Base_Start(&htim2);
-	HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_1);
-	HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_3);
+//	HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_1);
+//	HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_3);
 	
   /* USER CODE END 2 */
 
@@ -179,15 +184,19 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_8, GPIO_PIN_RESET);
+//		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_8, GPIO_PIN_RESET);
+//		HAL_Delay(100);
+//		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_8, GPIO_PIN_SET);
 		HAL_Delay(100);
-		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_8, GPIO_PIN_SET);
-		HAL_Delay(100);
+
+		odr = GPIOB->ODR;
+		status = ((odr & GPIO_PIN_1) << (16U)) | (~odr & GPIO_PIN_1);
+		SET_BIT(GPIOB->BSRR,status);
 		
 //		HAL_TIM_GenerateEvent(&htim2, TIM_EVENTSOURCE_CC1);
 
-		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_0, GPIO_PIN_RESET);
-		HAL_SPI_Transmit_DMA(&hspi2,&test_frame_union[0],1*4);
+//		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_0, GPIO_PIN_RESET);
+//		HAL_SPI_Transmit_DMA(&hspi2,&test_frame_union[0],1*4);
 
   }
   /* USER CODE END 3 */

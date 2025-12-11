@@ -132,8 +132,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
       Error_Handler();
     }
 
-//    pSyncConfig.SyncSignalID = HAL_DMAMUX1_SYNC_LPTIM2_OUT;
-		pSyncConfig.SyncSignalID = HAL_DMAMUX1_SYNC_DMAMUX1_CH0_EVT;
+    pSyncConfig.SyncSignalID = HAL_DMAMUX1_SYNC_LPTIM2_OUT;
     pSyncConfig.SyncPolarity = HAL_DMAMUX_SYNC_RISING;
     pSyncConfig.SyncEnable = ENABLE;
     pSyncConfig.EventEnable = DISABLE;
