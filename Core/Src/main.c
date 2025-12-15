@@ -170,7 +170,11 @@ int main(void)
 //	ATOMIC_SET_BIT(huart4.Instance->CR3, USART_CR3_DMAT);
 //	HAL_LPTIM_Counter_Start(&hlptim2,37500-1);
 
-	HAL_DMA_Start_IT(&hdma_tim2_up, &status, &GPIOB->BSRR, 1);
+//	HAL_DMA_Start_IT(&hdma_tim2_up, &status, &GPIOB->BSRR, 1);
+
+	ATOMIC_SET_BIT(huart4.Instance->CR3, USART_CR3_DMAT);
+	HAL_DMAEx_MultiBufferStart_IT(&hdma_tim2_up, UART_BUF1, &huart4.Instance->TDR,UART_BUF2, 1);
+
 	HAL_TIM_Base_Start(&htim2);
 //	HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_1);
 //	HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_3);
@@ -191,7 +195,7 @@ int main(void)
 
 		odr = GPIOB->ODR;
 		status = ((odr & GPIO_PIN_1) << (16U)) | (~odr & GPIO_PIN_1);
-		SET_BIT(GPIOB->BSRR,status);
+//		SET_BIT(GPIOB->BSRR,status);
 		
 //		HAL_TIM_GenerateEvent(&htim2, TIM_EVENTSOURCE_CC1);
 
